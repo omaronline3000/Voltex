@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Voltex.API/Voltex.API.csproj" />
+  <Project Path="Voltex.Core/Voltex.Core.csproj" />
+  <Project Path="Voltex.Infrastructure/Voltex.Infrastructure.csproj" />
+</Solution>
