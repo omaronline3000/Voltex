@@ -13,7 +13,7 @@ namespace Voltex.Core.Entities.Product
         public int ProductId { get; set; }
 
         //Nav
-        public Product product { get; set; }
+        public virtual Product product { get; set; }
 
     }
 }

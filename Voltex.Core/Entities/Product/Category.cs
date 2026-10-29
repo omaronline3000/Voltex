@@ -10,6 +10,6 @@ namespace Voltex.Core.Entities.Product
         public string Description { get; set; }
 
         //Nav
-        public ICollection<Product> products { get; set; }
+        public virtual ICollection<Product> products { get; set; }
     }
 }

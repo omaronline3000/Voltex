@@ -15,7 +15,7 @@ namespace Voltex.Core.Entities.Product
         public int CategoryId { get; set; }
 
         //Nav
-        public Category category { get; set; }
-        public ICollection<Image> images { get; set; }
+        public virtual Category category { get; set; }
+        public virtual ICollection<Image> images { get; set; }
     }
 }
