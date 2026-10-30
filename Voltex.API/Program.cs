@@ -1,4 +1,6 @@
 
+using Voltex.Infrastructure;
+
 namespace Voltex.API
 {
     public class Program
@@ -13,6 +15,8 @@ namespace Voltex.API
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            // Register Infrastructur Configuration
+            builder.Services.InfrastuctureConfiguration(builder.Configuration);
 
             var app = builder.Build();
 
