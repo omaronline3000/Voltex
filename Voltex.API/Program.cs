@@ -1,4 +1,3 @@
-
 using Voltex.Infrastructure;
 
 namespace Voltex.API
@@ -9,14 +8,23 @@ namespace Voltex.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
+
+
             // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+            // OpenAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
             // Register Infrastructur Configuration
             builder.Services.InfrastuctureConfiguration(builder.Configuration);
+
+            // Register AutoMapper
+            builder.Services.AddAutoMapper(
+                ctg => { },
+                AppDomain.CurrentDomain.GetAssemblies()
+                );
 
             var app = builder.Build();
 

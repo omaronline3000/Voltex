@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Voltex.Core.DTOs;
 using Voltex.Core.Entities.Product;
@@ -8,7 +9,7 @@ namespace Voltex.API.Controllers
 {
     public class CategoriesController : BaseController
     {
-        public CategoriesController(IUnitOfWork unitOfWork) : base(unitOfWork)
+        public CategoriesController(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
         }
 
@@ -46,7 +47,7 @@ namespace Voltex.API.Controllers
         {
             try
             {
-                var category = new Category() { CategoryTitle = categoryDTO.Title, Description = categoryDTO.Description };
+                var category = _mapper.Map<Category>(categoryDTO);
                 await _unitOfWork.categoryRepository.AddAsync(category);
                 return Created();
             }
@@ -62,12 +63,7 @@ namespace Voltex.API.Controllers
         {
             try
             {
-                var category = new Category()
-                {
-                    CategoryTitle = categoryDTO.Titel,
-                    Description = categoryDTO.Description,
-                    Id = categoryDTO.id
-                };
+                var category = _mapper.Map<Category>(categoryDTO);
                 await _unitOfWork.categoryRepository.UpdateAsync(category);
                 return Ok();
             }
