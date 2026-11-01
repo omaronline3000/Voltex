@@ -2,7 +2,7 @@
 using Voltex.Core.DTOs;
 using Voltex.Core.Entities.Product;
 
-namespace Voltex.API.Controllers.Mappers
+namespace Voltex.API.Mappers
 {
     public class CategoryMapper:Profile
     {
