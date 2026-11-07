@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -16,20 +17,18 @@ namespace Voltex.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task AddAsync(T entity)
+        public async Task<T> AddAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);
             await _context.SaveChangesAsync();
+            
+            return entity;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(T entity)
         {
-            var entity = await _context.Set<T>().FindAsync(id);
-            if (entity is not null)
-            {
                 _context.Set<T>().Remove(entity);
                 await _context.SaveChangesAsync();
-            }
         }
 
         public async Task<IReadOnlyList<T>> GetAllAsync() 
@@ -47,12 +46,12 @@ namespace Voltex.Infrastructure.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public async Task<T?> GetByIdAsync(int id)
         {
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public async Task<T> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes)
+        public async Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _context.Set<T>();
             foreach(var include in includes)

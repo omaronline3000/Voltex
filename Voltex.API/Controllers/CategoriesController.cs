@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Voltex.Core.DTOs;
 using Voltex.Core.Entities.Product;
 using Voltex.Core.Interfaces;
-
+using Voltex.API.Helper;
 namespace Voltex.API.Controllers
 {
     public class CategoriesController : BaseController
@@ -13,79 +13,83 @@ namespace Voltex.API.Controllers
         {
         }
 
-        [HttpGet("All")]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                var categories = await _unitOfWork.categoryRepository.GetAllAsync();
-                if (categories is not null)
-                    return Ok(categories);
-                return BadRequest();
-            }
-            catch (Exception ex) { 
-                return NotFound(ex.Message);
-            }
+            var categories = await _unitOfWork.categoryRepository.GetAllAsync();
+                    return Ok(new ResponseApi<IReadOnlyList<Category>>
+                        (message: "Successfully Returned Data" , data: categories));
+
         }
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            try
-            {
                 var category = await _unitOfWork.categoryRepository.GetByIdAsync(id);
-                if(category is not null) return Ok(category);
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
 
-                return NotFound(ex.Message);
-            }
+                if(category is not null) 
+                return Ok(new ResponseApi<Category>
+                        (message: "Successfully Returned Data", data: category));
+                else return NotFound(new ProblemDetails()
+                {
+                    Status = 404,
+                    Title = "Not Found",
+                    Detail = "Not Found Category with that Id"
+                });
         }
-        [HttpPost("add")]
+        [HttpPost]
         public async Task<IActionResult> Add(CategoryDTO categoryDTO)
         {
-            try
-            {
-                var category = _mapper.Map<Category>(categoryDTO);
-                await _unitOfWork.categoryRepository.AddAsync(category);
-                return Created();
-            }
-            catch (Exception ex)
-            {
+                 //TODO: Add business Logic Validation for Duplicates Names
 
-                return BadRequest(ex.Message);
-            }
+                var category = _mapper.Map<Category>(categoryDTO);
+
+                var entity = await _unitOfWork.categoryRepository.AddAsync(category);
+
+                var NewCategory = _mapper.Map<CategoryDTO>(entity); 
+
+                return CreatedAtAction(nameof(GetById) ,
+                    new {id = category.Id } ,
+                    new ResponseApi<CategoryDTO>(message: "Successfully Created Resource" , data: NewCategory));
+            
         }
 
-        [HttpPut("Edit")]
+        [HttpPut]
        public async Task<IActionResult> Update(UpdateCategoryDTO categoryDTO)
         {
-            try
+            var category = await _unitOfWork.categoryRepository.GetByIdAsync(categoryDTO.id);
+            if (category is not null)
             {
-                var category = _mapper.Map<Category>(categoryDTO);
+                _mapper.Map(categoryDTO, category);
                 await _unitOfWork.categoryRepository.UpdateAsync(category);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpDelete("Delete")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                await _unitOfWork.categoryRepository.DeleteAsync(id);
                 return NoContent();
             }
-            catch (Exception)
+            else return NotFound(new ProblemDetails()
             {
+                Status = 404,
+                Title = "Not Found",
+                Detail = "Not Found Category with that Id"
+            });
+                
+           
+        }
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id)
+        {
 
-                return BadRequest();
+            var category = await _unitOfWork.categoryRepository.GetByIdAsync(id);
+            if (category is not null)
+            {
+                await _unitOfWork.categoryRepository.DeleteAsync(category);
+                return NoContent();
             }
+            else return NotFound(new ProblemDetails()
+            {
+                Status = 404,
+                Title = "Not Found",
+                Detail = "Not Found Category with that Id"
+            });
+
+            
         }
 
     }

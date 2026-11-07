@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Voltex.Infrastructure;
 
 namespace Voltex.API
@@ -12,8 +13,10 @@ namespace Voltex.API
 
             // Add services to the container.
 
+
             builder.Services.AddControllers();
-            // OpenAPI
+
+            // OpenAPI Documentation 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -22,9 +25,12 @@ namespace Voltex.API
 
             // Register AutoMapper
             builder.Services.AddAutoMapper(
-                ctg => { },
+                cfg => { },
                 AppDomain.CurrentDomain.GetAssemblies()
                 );
+
+            // Register ProblemDetails Service
+            builder.Services.AddProblemDetails();
 
             var app = builder.Build();
 
@@ -35,12 +41,30 @@ namespace Voltex.API
                 app.UseSwaggerUI();
             }
 
+            app.UseExceptionHandler(config =>
+            {
+                    config.Run(async contex =>
+                    {
+                        contex.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                        contex.Response.ContentType = "application/json";
+
+                        await contex.Response.WriteAsJsonAsync(new
+                        {
+                            status = "500",
+                            message = $"Internal Error, Plese Contact the Developer {builder.Configuration["Developer Mail"]}.",
+                            traceid = contex.TraceIdentifier
+                        });
+                    });
+            });
+
+            app.UseStatusCodePages();
+
             app.UseAuthorization();
 
 
-            app.MapControllers();
+           app.MapControllers();
 
-            app.Run();
-        }
+           app.Run();
+            }
     }
-}
+    }

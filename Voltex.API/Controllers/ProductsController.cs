@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Voltex.API.Helper;
 using Voltex.Core.DTOs;
 using Voltex.Core.Entities.Product;
 using Voltex.Core.Interfaces;
@@ -13,86 +14,84 @@ namespace Voltex.API.Controllers
         {
         }
 
-        [HttpGet("All")]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                var entities = await _unitOfWork.productRepository.GetAllAsync();
-                if (entities is not null)
-                    return Ok(entities);
-                else return BadRequest();
-            }
-            catch (Exception ex)
-            {
+            var Products = await _unitOfWork.productRepository.GetAllAsync();
+            return Ok(new ResponseApi<IReadOnlyList<Product>>
+                (message: "Successfully Returned Data", data: Products));
 
-                return BadRequest(ex.Message);
-            }
+        }
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var Product = await _unitOfWork.productRepository.GetByIdAsync(id);
+
+            if (Product is not null)
+                return Ok(new ResponseApi<Product>
+                        (message: "Successfully Returned Data", data: Product));
+            else return NotFound(new ProblemDetails()
+            {
+                Status = 404,
+                Title = "Not Found",
+                Detail = "Not Found Product with that Id"
+            });
+        }
+        [HttpPost]
+        public async Task<IActionResult> Add(ProductDTO ProductDTO)
+        {
+            //TODO: Add business Logic Validation for Duplicates Names
+
+            var Product = _mapper.Map<Product>(ProductDTO);
+
+            var entity = await _unitOfWork.productRepository.AddAsync(Product);
+
+            var NewProduct = _mapper.Map<ProductDTO>(entity);
+
+            return CreatedAtAction(nameof(GetById),
+                new { id = Product.Id },
+                new ResponseApi<ProductDTO>(message: "Successfully Created Resource", data: NewProduct));
+
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById([FromRoute]int id)
+        [HttpPut]
+        public async Task<IActionResult> Update(UpdateProductDTO ProductDTO)
         {
-            try
+            var Product = await _unitOfWork.productRepository.GetByIdAsync(ProductDTO.id);
+            if (Product is not null)
             {
-                var entity = await _unitOfWork.productRepository.GetByIdAsync(id);
-                if (entity is not null)
-                    return Ok(entity);
-                else return NotFound();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost("Add")]
-        public async Task<IActionResult> Add(ProductDTO productFromReq)
-        {
-            try
-            {
-                var product = _mapper.Map<Product>(productFromReq);
-
-                await _unitOfWork.productRepository.AddAsync(product);
-                return Created();
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpPut("Edit")]
-        public async Task<IActionResult> Update(UpdateProductDTO productFromReq)
-        {
-            try
-            {
-                var product = _mapper.Map<Product>(productFromReq);
-                await _unitOfWork.productRepository.UpdateAsync(product);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpDelete("Delete")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                await _unitOfWork.productRepository.DeleteAsync(id);
+                _mapper.Map(ProductDTO, Product);
+                await _unitOfWork.productRepository.UpdateAsync(Product);
                 return NoContent();
             }
-            catch (Exception ex)
+            else return NotFound(new ProblemDetails()
             {
+                Status = 404,
+                Title = "Not Found",
+                Detail = "Not Found Product with that Id"
+            });
 
-                return BadRequest();
-            }
+
         }
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id)
+        {
 
+            var Product = await _unitOfWork.productRepository.GetByIdAsync(id);
+            if (Product is not null)
+            {
+                await _unitOfWork.productRepository.DeleteAsync(Product);
+                return NoContent();
+            }
+            else return NotFound(new ProblemDetails()
+            {
+                Status = 404,
+                Title = "Not Found",
+                Detail = "Not Found Product with that Id"
+            });
+
+
+        }
 
     }
 }
