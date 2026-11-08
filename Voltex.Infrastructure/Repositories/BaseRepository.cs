@@ -11,7 +11,7 @@ namespace Voltex.Infrastructure.Repositories
 {
     public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
-        private readonly AppDbContext _context;
+        protected readonly AppDbContext _context;
         public BaseRepository(AppDbContext context)
         {
             _context = context;
@@ -41,7 +41,7 @@ namespace Voltex.Infrastructure.Repositories
             IQueryable<T> query = _context.Set<T>().AsNoTracking();
             foreach(var include in includes)
             {
-                query.Include(include);
+                query = query.Include(include);
             }
             return await query.ToListAsync();
         }
@@ -56,7 +56,7 @@ namespace Voltex.Infrastructure.Repositories
             IQueryable<T> query = _context.Set<T>();
             foreach(var include in includes)
             {
-                query.Include(include);
+               query =  query.Include(include);
             }
             return await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
         }

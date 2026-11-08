@@ -71,6 +71,26 @@ namespace Voltex.Infrastructure.Data.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("images");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ImageName = "Test1",
+                            ProductId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ImageName = "Test2",
+                            ProductId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ImageName = "Test3",
+                            ProductId = 1
+                        });
                 });
 
             modelBuilder.Entity("Voltex.Core.Entities.Product.Product", b =>

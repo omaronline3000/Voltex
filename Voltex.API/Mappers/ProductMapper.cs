@@ -8,8 +8,12 @@ namespace Voltex.API.Mappers
     {
         public ProductMapper()
         {
-            CreateMap<ProductDTO, Product>().ReverseMap();
-            CreateMap<UpdateProductDTO, Product>().ReverseMap();
+                CreateMap<Product, ProductDTO>()
+                .ForMember(p => p.CategoryName, optoins => optoins.MapFrom(p => p.category.CategoryTitle))
+                .ReverseMap();
+                CreateMap<UpdateProductDTO, Product>()
+                    .ReverseMap();        
+            
         }
     }
 }

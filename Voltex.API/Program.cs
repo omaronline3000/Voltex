@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using Voltex.Infrastructure;
 
 namespace Voltex.API
@@ -15,6 +16,10 @@ namespace Voltex.API
 
 
             builder.Services.AddControllers();
+                //.AddJsonOptions(options =>
+                //{
+                //    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                //});
 
             // OpenAPI Documentation 
             builder.Services.AddEndpointsApiExplorer();

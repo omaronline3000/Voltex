@@ -17,19 +17,26 @@ namespace Voltex.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var Products = await _unitOfWork.productRepository.GetAllAsync();
-            return Ok(new ResponseApi<IReadOnlyList<Product>>
-                (message: "Successfully Returned Data", data: Products));
+            var Products = await _unitOfWork.productRepository.GetAllAsync(p => p.category , p => p.images);
+            
+            var ProductsDto = _mapper.Map<List<ProductDTO>>(Products);
+
+            return Ok(new ResponseApi<IReadOnlyList<ProductDTO>>
+                (message: "Successfully Returned Data", data: ProductsDto));
 
         }
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var Product = await _unitOfWork.productRepository.GetByIdAsync(id);
+            var Product = await _unitOfWork.productRepository.GetByIdAsync(id,p => p.category , p => p.images);
 
             if (Product is not null)
-                return Ok(new ResponseApi<Product>
-                        (message: "Successfully Returned Data", data: Product));
+            {
+             var ProductDto = _mapper.Map<ProductDTO>(Product);
+                return Ok(new ResponseApi<ProductDTO>
+                        (message: "Successfully Returned Data", data: ProductDto));
+            }
+                
             else return NotFound(new ProblemDetails()
             {
                 Status = 404,
