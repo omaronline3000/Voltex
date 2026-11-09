@@ -25,6 +25,13 @@ namespace Voltex.Infrastructure.Repositories
             return entity;
         }
 
+        public async Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities)
+        {
+            await _context.Set<T>().AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
+            return entities;
+        }
+
         public async Task DeleteAsync(T entity)
         {
                 _context.Set<T>().Remove(entity);

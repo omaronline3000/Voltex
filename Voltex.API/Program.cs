@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using Voltex.Core.Services;
 using Voltex.Infrastructure;
+using Voltex.Infrastructure.Services;
 
 namespace Voltex.API
 {
@@ -14,12 +16,12 @@ namespace Voltex.API
 
             // Add services to the container.
 
-
             builder.Services.AddControllers();
                 //.AddJsonOptions(options =>
                 //{
                 //    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 //});
+
 
             // OpenAPI Documentation 
             builder.Services.AddEndpointsApiExplorer();
@@ -34,8 +36,12 @@ namespace Voltex.API
                 AppDomain.CurrentDomain.GetAssemblies()
                 );
 
+
             // Register ProblemDetails Service
             builder.Services.AddProblemDetails();
+
+            // Register ImageService
+            builder.Services.AddSingleton<IImageManagementService, ImageManagementService>();
 
             var app = builder.Build();
 

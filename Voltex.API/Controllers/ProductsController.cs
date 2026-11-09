@@ -5,13 +5,16 @@ using Voltex.API.Helper;
 using Voltex.Core.DTOs;
 using Voltex.Core.Entities.Product;
 using Voltex.Core.Interfaces;
+using Voltex.Core.Services;
 
 namespace Voltex.API.Controllers
 {
     public class ProductController : BaseController
     {
-        public ProductController(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        private readonly IImageManagementService _imageManagementService;
+        public ProductController(IUnitOfWork unitOfWork, IMapper mapper , IImageManagementService imageManagementService) : base(unitOfWork, mapper)
         {
+            _imageManagementService = imageManagementService;
         }
 
         [HttpGet]
@@ -45,14 +48,23 @@ namespace Voltex.API.Controllers
             });
         }
         [HttpPost]
-        public async Task<IActionResult> Add(ProductDTO ProductDTO)
+        public async Task<IActionResult> Add(AddProductDTO ProductDTO)
         {
             //TODO: Add business Logic Validation for Duplicates Names
 
-            var Product = _mapper.Map<Product>(ProductDTO);
 
+            // Saving Product
+            var Product = _mapper.Map<Product>(ProductDTO);
             var entity = await _unitOfWork.productRepository.AddAsync(Product);
 
+            // Saving Images
+            var ImagesUrls = await _imageManagementService.SaveImageAync(ProductDTO.Images, ProductDTO.Name);
+            var Images = ImagesUrls.Select(i => new Image()
+            {
+                ImageName = i,
+                ProductId = entity.Id
+            }).ToList();
+            await _unitOfWork.imageRepository.AddRangeAsync(Images);
             var NewProduct = _mapper.Map<ProductDTO>(entity);
 
             return CreatedAtAction(nameof(GetById),

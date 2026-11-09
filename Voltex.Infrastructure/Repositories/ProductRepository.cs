@@ -15,19 +15,5 @@ namespace Voltex.Infrastructure.Repositories
         public ProductRepository(AppDbContext context) : base(context)
         {
         }
-
-        public async Task<IReadOnlyList<Product>> GetAllIncludeAsync()
-        {
-            /*IQueryable<Product> query = _context.Set<Product>().AsNoTracking();
-            query.Include(p => p.category);
-            query.Include(p => p.images);
-            return await query.ToListAsync();
-*/
-            return await _context.products
-                .AsNoTracking()
-                .Include(p => p.images)
-                .Include(p => p.category)
-                .ToListAsync();
-        }
     }
 }

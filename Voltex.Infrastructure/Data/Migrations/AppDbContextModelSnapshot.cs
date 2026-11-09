@@ -112,7 +112,10 @@ namespace Voltex.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("Price")
+                    b.Property<decimal>("NewPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("OldPrice")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -128,7 +131,8 @@ namespace Voltex.Infrastructure.Data.Migrations
                             CategoryId = 1,
                             Description = "Test Description",
                             Name = "TestProducts",
-                            Price = 182.12m
+                            NewPrice = 100.00m,
+                            OldPrice = 182.12m
                         });
                 });
 

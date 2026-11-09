@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Voltex.Core.Interfaces;
+using Voltex.Core.Services;
 
 namespace Voltex.API.Controllers
 {
@@ -11,7 +12,8 @@ namespace Voltex.API.Controllers
     {
         protected readonly IUnitOfWork _unitOfWork;
         protected readonly IMapper _mapper;
-        public BaseController(IUnitOfWork unitOfWork , IMapper mapper)
+
+        public BaseController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

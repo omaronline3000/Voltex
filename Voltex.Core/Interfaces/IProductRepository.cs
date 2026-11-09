@@ -7,6 +7,5 @@ namespace Voltex.Core.Interfaces
 {
     public interface IProductRepository:IBaseRepository<Product>
     {
-        Task<IReadOnlyList<Product>> GetAllIncludeAsync();
     }
 }
