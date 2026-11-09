@@ -15,8 +15,8 @@ namespace Voltex.API.Mappers
                 .ForMember(p => p.images, options => options.Ignore())
                 .ReverseMap();
             CreateMap<UpdateProductDTO, Product>()
-                    .ReverseMap();        
-            
+                .ForMember(p => p.images, options => options.Ignore())
+                    .ReverseMap();
         }
     }
 }

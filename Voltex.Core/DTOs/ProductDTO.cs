@@ -15,8 +15,6 @@ namespace Voltex.Core.DTOs
         public string CategoryName { get; set; } = string.Empty;
         public List<ImageDTO> images { get; set; } = [];
     }
-    public record UpdateProductDTO(int id, string Name, string Description, decimal price, int CategoryId);
-
 
     public record AddProductDTO
     {
@@ -28,6 +26,10 @@ namespace Voltex.Core.DTOs
         public IFormFileCollection Images { set; get; }
     }
 
+
+    public record UpdateProductDTO:AddProductDTO
+    {
+    }
 
 
     // Image DTO

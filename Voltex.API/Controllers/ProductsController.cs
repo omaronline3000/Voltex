@@ -73,14 +73,38 @@ namespace Voltex.API.Controllers
 
         }
 
-        [HttpPut]
-        public async Task<IActionResult> Update(UpdateProductDTO ProductDTO)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id , UpdateProductDTO ProductDTO)
         {
-            var Product = await _unitOfWork.productRepository.GetByIdAsync(ProductDTO.id);
+            var Product = await _unitOfWork.productRepository.GetByIdAsync(id, p=> p.images);
             if (Product is not null)
             {
+                // Update Products
                 _mapper.Map(ProductDTO, Product);
                 await _unitOfWork.productRepository.UpdateAsync(Product);
+
+                // Delete Old Images from Storage
+                foreach(var image in Product.images)
+                {
+                    _imageManagementService.DeleteImageAsync(image.ImageName);
+                }
+                // Delete Old Images Urls From Database
+                foreach(var image in Product.images)
+                {
+                    await _unitOfWork.imageRepository.DeleteAsync(image);
+                }
+
+                // Add New images to the server storage
+                var ImageUrls = await _imageManagementService.SaveImageAync(ProductDTO.Images, ProductDTO.Name);
+                // Add New Images Urls to Database
+                var Images = ImageUrls.Select(i => new Image()
+                {
+                    ImageName = i,
+                    ProductId = Product.Id
+                });
+                await _unitOfWork.imageRepository.AddRangeAsync(Images);
+
+
                 return NoContent();
             }
             else return NotFound(new ProblemDetails()
@@ -99,6 +123,7 @@ namespace Voltex.API.Controllers
             var Product = await _unitOfWork.productRepository.GetByIdAsync(id);
             if (Product is not null)
             {
+                // Also Products will be deleted due to the Cascade Delete Behavior
                 await _unitOfWork.productRepository.DeleteAsync(Product);
                 return NoContent();
             }
