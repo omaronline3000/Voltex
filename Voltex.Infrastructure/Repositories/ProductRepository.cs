@@ -7,7 +7,7 @@ using System.Text;
 using Voltex.Core.Entities.Product;
 using Voltex.Core.Interfaces;
 using Voltex.Infrastructure.Data;
-
+using Voltex.Core.Helper;
 namespace Voltex.Infrastructure.Repositories
 {
     public class ProductRepository : BaseRepository<Product>, IProductRepository
@@ -15,5 +15,6 @@ namespace Voltex.Infrastructure.Repositories
         public ProductRepository(AppDbContext context) : base(context)
         {
         }
+
     }
 }

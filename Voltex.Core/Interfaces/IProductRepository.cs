@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
+using Voltex.Core.Helper;
 using Voltex.Core.Entities.Product;
-
 namespace Voltex.Core.Interfaces
 {
     public interface IProductRepository:IBaseRepository<Product>
     {
+     
     }
 }

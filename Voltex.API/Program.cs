@@ -14,7 +14,7 @@ namespace Voltex.API
 
 
 
-            // Add services to the container.
+            /* Add services to the container.*/
 
             builder.Services.AddControllers();
                 //.AddJsonOptions(options =>
@@ -45,7 +45,8 @@ namespace Voltex.API
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            /* Configure the HTTP request pipeline. */
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -61,7 +62,7 @@ namespace Voltex.API
 
                         await contex.Response.WriteAsJsonAsync(new
                         {
-                            status = "500",
+                            status = StatusCodes.Status500InternalServerError,
                             message = $"Internal Error, Plese Contact the Developer {builder.Configuration["Developer Mail"]}.",
                             traceid = contex.TraceIdentifier
                         });

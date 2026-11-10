@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Voltex.API.Helper;
 using Voltex.Core.DTOs;
 using Voltex.Core.Entities.Product;
+using Voltex.Core.Helper;
 using Voltex.Core.Interfaces;
 using Voltex.Core.Services;
 
@@ -18,9 +19,9 @@ namespace Voltex.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(string sort,int? CategoryId)
         {
-            var Products = await _unitOfWork.productRepository.GetAllAsync(p => p.category , p => p.images);
+             var Products = await _unitOfWork.productRepository.GetAllAsync(p => p.NewPrice ,SortTypes.Des,p => p.category , p => p.images);
             
             var ProductsDto = _mapper.Map<List<ProductDTO>>(Products);
 
