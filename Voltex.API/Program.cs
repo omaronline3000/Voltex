@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using Voltex.API.Middlewares;
+using Voltex.Core.Entities;
 using Voltex.Core.Services;
 using Voltex.Infrastructure;
+using Voltex.Infrastructure.Data;
 using Voltex.Infrastructure.Services;
 
 namespace Voltex.API
@@ -30,8 +33,9 @@ namespace Voltex.API
             builder.Services.AddSwaggerGen();
             builder.Services.AddAutoMapper(
                 cfg => { },
-                AppDomain.CurrentDomain.GetAssemblies()
-                );
+                AppDomain.CurrentDomain.GetAssemblies());
+            builder.Services.AddIdentity<AppUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>();
 
             // Built-in Services Registeration
             builder.Services.AddControllers();
@@ -64,6 +68,7 @@ namespace Voltex.API
                 //options.AddTokenBucketLimiter();
                 //options.AddConcurrencyLimiter();
             });
+
 
             var app = builder.Build();
 

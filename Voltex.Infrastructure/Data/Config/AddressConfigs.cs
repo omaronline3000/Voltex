@@ -11,7 +11,11 @@ namespace Voltex.Infrastructure.Data.Config
     {
         public void Configure(EntityTypeBuilder<Address> builder)
         {
+            builder.HasOne(a => a.AppUser)
+                 .WithOne(u => u.Address)
+                 .HasForeignKey<Address>(a => a.AppUserId);
             builder.HasIndex(p => p.AppUserId).IsUnique();
+
         }
     }
 }

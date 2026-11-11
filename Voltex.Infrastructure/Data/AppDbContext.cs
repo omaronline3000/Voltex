@@ -24,6 +24,6 @@ namespace Voltex.Infrastructure.Data
         public DbSet<Product> products { get; set; }
         public DbSet<Category> categories { get; set; }
         public DbSet<Image> images { get; set; }
-        public DbSet<Address> addresses { get; set; }
+        public DbSet<Address> addresses { get;set; }
     }
 }

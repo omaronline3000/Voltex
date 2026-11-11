@@ -10,7 +10,7 @@ namespace Voltex.Core.Entities
         public string Street { get; set; }
 
         [ForeignKey(nameof(AppUserId))]
-        public int AppUserId { get; set; }
+        public string AppUserId { get; set; }
         public virtual AppUser AppUser { get; set; }
     }
 }
