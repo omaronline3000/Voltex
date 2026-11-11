@@ -7,6 +7,7 @@ using Voltex.Core.Entities.Product;
 using Voltex.Core.Helper;
 using Voltex.Core.Interfaces;
 using Voltex.Core.Services;
+using Voltex.Core.Sharing;
 
 namespace Voltex.API.Controllers
 {
@@ -19,14 +20,12 @@ namespace Voltex.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll(string sort,int? CategoryId)
+        public async Task<IActionResult> GetAll([FromQuery] QueryParameters parameters)
         {
-             var Products = await _unitOfWork.productRepository.GetAllAsync(p => p.NewPrice ,SortTypes.Des,p => p.category , p => p.images);
+            var Products = await _unitOfWork.productRepository.GetAllAsync(parameters,includes: [p => p.images]);
             
-            var ProductsDto = _mapper.Map<List<ProductDTO>>(Products);
-
-            return Ok(new ResponseApi<IReadOnlyList<ProductDTO>>
-                (message: "Successfully Returned Data", data: ProductsDto));
+            return Ok(new ResponseApi<PagedResults<ProductDTO>>
+                (message: "Successfully Returned Data", data: Products));
 
         }
         [HttpGet("{id:int}")]

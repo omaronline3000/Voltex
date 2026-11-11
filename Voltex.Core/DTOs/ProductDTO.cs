@@ -27,12 +27,15 @@ namespace Voltex.Core.DTOs
     }
 
 
-    public record UpdateProductDTO:AddProductDTO
+    public record UpdateProductDTO : AddProductDTO
     {
     }
 
 
     // Image DTO
 
-    public record ImageDTO(string ImageName, int ProductId);
+    public record ImageDTO {
+        public string ImageName { get; set; }
+       public int ProductId { get; set; }
+    }
 }

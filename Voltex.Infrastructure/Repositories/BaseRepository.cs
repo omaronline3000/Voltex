@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 using Voltex.Core.Entities.Product;
-using Voltex.Core.Helper;
 using Voltex.Core.Interfaces;
+using Voltex.Core.Sharing;
 using Voltex.Infrastructure.Data;
 
 namespace Voltex.Infrastructure.Repositories
@@ -54,46 +54,6 @@ namespace Voltex.Infrastructure.Repositories
             }
             return await query.ToListAsync();
         }
-
-
-        public async Task<IReadOnlyList<T>> GetAllAsync(Expression<Func<T, object>> sort, SortTypes type, params Expression<Func<T, object>>[] includes)
-        {
-            IQueryable<T> query = _context.Set<T>().AsNoTracking();
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-            if (type == SortTypes.Asc) query = query.OrderBy(sort);
-            else if (type == SortTypes.Des) query = query.OrderByDescending(sort);
-            return await query.ToListAsync();
-        }
-
-        public async Task<IReadOnlyList<T>> GetAllAsync(Expression<Func<T, object>> sort, SortTypes type)
-        {
-            IQueryable<T> query = _context.Set<T>().AsNoTracking();
-            if (type == SortTypes.Asc) query = query.OrderBy(sort);
-            else if (type == SortTypes.Des) query = query.OrderByDescending(sort);
-            return await query.ToListAsync();
-        }
-
-        public async Task<IReadOnlyList<T>> GetAllAsync(Expression<Func<T, bool>> cretira, params Expression<Func<T, object>>[] includes)
-        {
-            IQueryable<T> query = _context.Set<T>().AsNoTracking();
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-            query = query.Where(cretira);
-            return await query.ToListAsync();
-        }
-
-        public async Task<IReadOnlyList<T>> GetAllAsync(Expression<Func<T, bool>> cretria)
-        {
-            IQueryable<T> query = _context.Set<T>().AsNoTracking();
-            query = query.Where(cretria);
-            return await query.ToListAsync();
-        }
-
 
         public async Task<T?> GetByIdAsync(int id)
         {
