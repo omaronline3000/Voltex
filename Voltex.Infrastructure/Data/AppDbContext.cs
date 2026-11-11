@@ -1,13 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using Voltex.Core.Entities;
 using Voltex.Core.Entities.Product;
 
 namespace Voltex.Infrastructure.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<AppUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -22,5 +24,6 @@ namespace Voltex.Infrastructure.Data
         public DbSet<Product> products { get; set; }
         public DbSet<Category> categories { get; set; }
         public DbSet<Image> images { get; set; }
+        public DbSet<Address> addresses { get; set; }
     }
 }

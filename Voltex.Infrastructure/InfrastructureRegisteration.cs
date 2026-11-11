@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,10 +20,16 @@ namespace Voltex.Infrastructure
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            services.AddSingleton<IConnectionMultiplexer>(i =>
+            {
+                return ConnectionMultiplexer.Connect(configure.GetConnectionString("redis")!);
+            });
+
             var webRoot = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot");
             Directory.CreateDirectory(webRoot);
             services.AddSingleton<IFileProvider>(
                 new PhysicalFileProvider(webRoot));
+
 
             services.AddDbContext<AppDbContext>(options =>
             {

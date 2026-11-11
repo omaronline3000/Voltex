@@ -65,6 +65,7 @@ namespace Voltex.API.Controllers
                 ProductId = entity.Id
             }).ToList();
             await _unitOfWork.imageRepository.AddRangeAsync(Images);
+
             var NewProduct = _mapper.Map<ProductDTO>(entity);
 
             return CreatedAtAction(nameof(GetById),

@@ -1,0 +1,7 @@
+# Use this workspace to collaborate
+workspace:
+  id: d496e6d9-0256-461d-83d4-880aee43c9d6
+
+localResources:
+  specs:
+    - ../Voltex.API/obj/Debug/net10.0/EndpointInfo/Voltex.API.json

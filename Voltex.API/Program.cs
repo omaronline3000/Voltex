@@ -92,7 +92,7 @@ namespace Voltex.API
                     });
                 });
             });
-            app.UseCors("Default Policy");
+          //  app.UseCors("Default Policy");
             app.UseStatusCodePages();
 
             app.UseAuthorization();
