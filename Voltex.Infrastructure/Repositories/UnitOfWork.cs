@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,8 @@ namespace Voltex.Infrastructure.Repositories
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IConnectionMultiplexer _connect;
         private readonly IEmailService _emailService;
+        private readonly IGenerateToken _generateToken;
+        private readonly IConfiguration _configuration;
 
         public ICategoryRepository categoryRepository { get; }
 
@@ -28,19 +31,24 @@ namespace Voltex.Infrastructure.Repositories
         public ICartRepository cartRepository { get; }
 
         public IAuthenticationRepository authentication { get; }
-        public UnitOfWork(AppDbContext context , IConnectionMultiplexer connection , UserManager<AppUser> userManager, SignInManager<AppUser> signInManager , IEmailService emailService)
+        public UnitOfWork(AppDbContext context , IConnectionMultiplexer connection , UserManager<AppUser> userManager, 
+            SignInManager<AppUser> signInManager , IEmailService emailService , IGenerateToken generateToken , IConfiguration configuration)
         {
             _context = context;
             _connect = connection;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailService = emailService;
+            _generateToken = generateToken;
+            _configuration = configuration;
 
             categoryRepository = new CategoryRepository(_context);
             productRepository = new ProductRepository(_context);
             imageRepository = new ImageRepository(_context);
             cartRepository = new CartRepository(_connect);
-            authentication = new AuthenticationRepository(_userManager,_signInManager,_emailService);
+            authentication = new AuthenticationRepository
+                (_userManager,_signInManager,
+                _emailService,_configuration,_generateToken);
         }
 
     }

@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Security.Claims;
 using System.Text;
 using Voltex.Core.DTOs;
 using Voltex.Core.Entities;
@@ -18,12 +21,14 @@ namespace Voltex.Infrastructure.Repositories
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
-        public AuthenticationRepository(UserManager<AppUser> userManager , SignInManager<AppUser> signInManager, IEmailService emailService, IConfiguration configuration)
+        private readonly IGenerateToken _generateToken;
+        public AuthenticationRepository(UserManager<AppUser> userManager , SignInManager<AppUser> signInManager, IEmailService emailService, IConfiguration configuration , IGenerateToken generateToken)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailService = emailService;
             _configuration = configuration;
+            _generateToken = generateToken;
         }
         public async Task<string> RegisterAsync(RegisterDTO info)
         {
@@ -61,6 +66,12 @@ namespace Voltex.Infrastructure.Repositories
 
         public async Task<string> LoginAsync(LoginDTO info)
         {
+            // if you will check for nullability in controller remove this part 
+            if (info is null)
+            {
+                return null;
+            }
+
             var user = await _userManager.FindByEmailAsync(info.Email);
             if(user is null)
             {
@@ -74,18 +85,18 @@ namespace Voltex.Infrastructure.Repositories
             var res = await _signInManager.CheckPasswordSignInAsync(user, info.Password,true);
             if (!res.Succeeded)
             {
-                return "Password is Wrong";
+                return "Email or Password is Wrong";
             }
             await _signInManager.SignInAsync(user,true);
             // JWT token
+            return _generateToken.CreateAndGetToken(user);
 
-            return "Done";
         }
 
         public async Task SendConfirmationMail(string userId, string Email, string token)
         {
             var encodedToken = WebUtility.UrlEncode(token);
-            var confirmationLink = $"{_configuration["ClientSide:Anglur"]}/account/confirm-email?userId={userId}&token={encodedToken}";
+            var confirmationLink = $"{_configuration["ClientSide:Confirmation Email Link"]}?userId={userId}&token={encodedToken}";
             await _emailService.SendEmailAsync(Email, "Confirmation Mail", EmailBody.MailBody(confirmationLink, "Confirm Your Account"));
         }
 

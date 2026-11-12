@@ -23,7 +23,7 @@ namespace Voltex.Infrastructure
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.Configure<EmailSettings>(configure.GetSection("EmailSettings"));
             services.AddScoped<IEmailService, EmailService>();
-            
+            services.AddScoped<IGenerateToken, GenerateToken>();
             var webRoot = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot");
             Directory.CreateDirectory(webRoot);
             services.AddSingleton<IFileProvider>(
