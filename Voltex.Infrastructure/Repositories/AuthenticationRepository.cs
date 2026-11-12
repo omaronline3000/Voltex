@@ -79,7 +79,7 @@ namespace Voltex.Infrastructure.Repositories
             }
             if (!user.EmailConfirmed)
             {
-                await SendConfirmationMail(user.Id, user.Email!, await _userManager.GenerateEmailConfirmationTokenAsync(user));
+                await SendConfirmationMailAsync(user.Id, user.Email!, await _userManager.GenerateEmailConfirmationTokenAsync(user));
                 return "Confirm Your Account First, We have send you an email";
             }
             var res = await _signInManager.CheckPasswordSignInAsync(user, info.Password,true);
@@ -93,12 +93,47 @@ namespace Voltex.Infrastructure.Repositories
 
         }
 
-        public async Task SendConfirmationMail(string userId, string Email, string token)
+        public async Task SendConfirmationMailAsync(string userId, string Email, string token)
         {
             var encodedToken = WebUtility.UrlEncode(token);
             var confirmationLink = $"{_configuration["ClientSide:Confirmation Email Link"]}?userId={userId}&token={encodedToken}";
             await _emailService.SendEmailAsync(Email, "Confirmation Mail", EmailBody.MailBody(confirmationLink, "Confirm Your Account"));
         }
 
+        public async Task<string> ConfirmEmail(string userId , string token)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            
+            if(user is null)
+            {
+                return "There is no user with that email";
+            }
+
+            var res = await _userManager.ConfirmEmailAsync(user, token);
+            if (!res.Succeeded)
+            {
+                return res.Errors.ToList()[0].Description;
+            }
+            return "Email Confirmed Successfully";
+
+        }
+
+        public async Task SendResetPasswordEmailAsync(AppUser user)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = WebUtility.UrlEncode(token);
+            var confirmationLink = $"{_configuration["ClientSide:Confirmation Email Link"]}?userId={user.Id}&token={encodedToken}";
+            await _emailService.SendEmailAsync(user.Email, "Reset Password", EmailBody.MailBody(confirmationLink, "Reest Your Password"));
+        }
+
+        public async Task<string> ResetPasswordAsync(AppUser user, string token, string NewPassword)
+        {
+            var res = await _userManager.ResetPasswordAsync(user, token, NewPassword);
+            if (res.Succeeded)
+            {
+                return "Password Reset Successfully";
+            }
+            else return res.Errors.ToList()[0].Description;
+        }
     }
 }
