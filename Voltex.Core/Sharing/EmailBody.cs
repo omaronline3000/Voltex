@@ -7,10 +7,10 @@ namespace Voltex.Core.Sharing
 {
     public static class EmailBody
     {
-        public static string MailBody(string link, string message) => $""" 
+        public static string MailBody(string email , string token, string component, string message) => $""" 
             <h2>{message}</h2>
             <br>
-            <a href='{link}'>Click Here</a>
+            <a href='https://localhost:4200/account/{component}?email={email}&token={token}'>Click Here</a>
 """;
     }
 }

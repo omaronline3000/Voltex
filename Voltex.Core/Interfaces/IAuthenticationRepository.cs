@@ -10,5 +10,10 @@ namespace Voltex.Core.Interfaces
     public interface IAuthenticationRepository
     {
         Task<string> RegisterAsync(RegisterDTO info);
+        Task<string> LoginAsync(LoginDTO info);
+        Task<bool> ConfirmEmailAsync(ActiveEmailDTO emaildto);
+        Task<bool> SendResetPasswordEmailAsync(string email);
+        Task<string> ResetPasswordAsync(ResetPasswordDTO resetpassword);
+
     }
 }

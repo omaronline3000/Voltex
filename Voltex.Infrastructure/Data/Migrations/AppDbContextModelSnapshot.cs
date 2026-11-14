@@ -258,6 +258,144 @@ namespace Voltex.Infrastructure.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Voltex.Core.Entities.Order.DeliveryMethod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DeliveryTime")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("deliveryMethods");
+                });
+
+            modelBuilder.Entity("Voltex.Core.Entities.Order.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClientEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("DeliverMethodId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("OrderStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("SubTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeliverMethodId");
+
+                    b.ToTable("orders");
+                });
+
+            modelBuilder.Entity("Voltex.Core.Entities.Order.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("MainImage")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductItemId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("orderItems");
+                });
+
+            modelBuilder.Entity("Voltex.Core.Entities.Order.ShippingData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ZipCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.ToTable("ShippingData");
+                });
+
             modelBuilder.Entity("Voltex.Core.Entities.Product.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -435,6 +573,39 @@ namespace Voltex.Infrastructure.Data.Migrations
                     b.Navigation("AppUser");
                 });
 
+            modelBuilder.Entity("Voltex.Core.Entities.Order.Order", b =>
+                {
+                    b.HasOne("Voltex.Core.Entities.Order.DeliveryMethod", "DeliveryMethod")
+                        .WithMany("orders")
+                        .HasForeignKey("DeliverMethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DeliveryMethod");
+                });
+
+            modelBuilder.Entity("Voltex.Core.Entities.Order.OrderItem", b =>
+                {
+                    b.HasOne("Voltex.Core.Entities.Order.Order", "Order")
+                        .WithMany("orderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("Voltex.Core.Entities.Order.ShippingData", b =>
+                {
+                    b.HasOne("Voltex.Core.Entities.Order.Order", "Order")
+                        .WithOne("ShippingData")
+                        .HasForeignKey("Voltex.Core.Entities.Order.ShippingData", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("Voltex.Core.Entities.Product.Image", b =>
                 {
                     b.HasOne("Voltex.Core.Entities.Product.Product", "product")
@@ -461,6 +632,19 @@ namespace Voltex.Infrastructure.Data.Migrations
                 {
                     b.Navigation("Address")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Voltex.Core.Entities.Order.DeliveryMethod", b =>
+                {
+                    b.Navigation("orders");
+                });
+
+            modelBuilder.Entity("Voltex.Core.Entities.Order.Order", b =>
+                {
+                    b.Navigation("ShippingData")
+                        .IsRequired();
+
+                    b.Navigation("orderItems");
                 });
 
             modelBuilder.Entity("Voltex.Core.Entities.Product.Category", b =>

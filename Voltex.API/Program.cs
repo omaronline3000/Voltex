@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Collections.Concurrent;
@@ -10,7 +12,8 @@ using Voltex.Core.Services;
 using Voltex.Infrastructure;
 using Voltex.Infrastructure.Data;
 using Voltex.Infrastructure.Services;
-
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 namespace Voltex.API
 {
     public class Program
@@ -21,7 +24,7 @@ namespace Voltex.API
 
 
 
-            // =============================> Add services to the container.
+            // ========================================================> Add services to the container.
 
 
             // Custom Services Registeration
@@ -35,7 +38,8 @@ namespace Voltex.API
                 cfg => { },
                 AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddIdentity<AppUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>();
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
 
             // Built-in Services Registeration
             builder.Services.AddControllers();
@@ -68,7 +72,41 @@ namespace Voltex.API
                 //options.AddTokenBucketLimiter();
                 //options.AddConcurrencyLimiter();
             });
-
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            }).AddCookie(optios =>
+            {
+                optios.Cookie.Name = "token";
+                optios.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return Task.CompletedTask;
+                };
+            }).AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"])),
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["JWT:Issuer"],
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                };
+                options.Events = new JwtBearerEvents()
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Cookies["token"];
+                        return Task.CompletedTask;
+                    }
+                };
+            });
 
             var app = builder.Build();
 
@@ -97,7 +135,7 @@ namespace Voltex.API
                     });
                 });
             });
-          //  app.UseCors("Default Policy");
+            app.UseCors("Default Policy");
             app.UseStatusCodePages();
 
             app.UseAuthorization();

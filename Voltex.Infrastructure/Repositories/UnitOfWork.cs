@@ -19,7 +19,7 @@ namespace Voltex.Infrastructure.Repositories
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IConnectionMultiplexer _connect;
         private readonly IEmailService _emailService;
-        private readonly IGenerateToken _generateToken;
+        private readonly IGenerateTokenService _generateToken;
         private readonly IConfiguration _configuration;
 
         public ICategoryRepository categoryRepository { get; }
@@ -32,7 +32,7 @@ namespace Voltex.Infrastructure.Repositories
 
         public IAuthenticationRepository authentication { get; }
         public UnitOfWork(AppDbContext context , IConnectionMultiplexer connection , UserManager<AppUser> userManager, 
-            SignInManager<AppUser> signInManager , IEmailService emailService , IGenerateToken generateToken , IConfiguration configuration)
+            SignInManager<AppUser> signInManager , IEmailService emailService , IGenerateTokenService generateToken , IConfiguration configuration)
         {
             _context = context;
             _connect = connection;

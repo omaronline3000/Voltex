@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +24,11 @@ namespace Voltex.Infrastructure
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.Configure<EmailSettings>(configure.GetSection("EmailSettings"));
             services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<IGenerateToken, GenerateToken>();
+            services.AddScoped<IGenerateTokenService, GenerateTokenService>();
+            
+
+
+            // Regisetr File Uploading Service
             var webRoot = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot");
             Directory.CreateDirectory(webRoot);
             services.AddSingleton<IFileProvider>(
