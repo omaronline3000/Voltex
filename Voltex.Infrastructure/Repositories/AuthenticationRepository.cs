@@ -13,22 +13,25 @@ using Voltex.Core.DTOs;
 using Voltex.Core.Entities;
 using Voltex.Core.Interfaces;
 using Voltex.Core.Sharing;
+using Voltex.Infrastructure.Data;
 namespace Voltex.Infrastructure.Repositories
 {
     public class AuthenticationRepository : IAuthenticationRepository
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly AppDbContext _context;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
         private readonly IGenerateTokenService _generateToken;
-        public AuthenticationRepository(UserManager<AppUser> userManager , SignInManager<AppUser> signInManager, IEmailService emailService, IConfiguration configuration , IGenerateTokenService generateToken)
+        public AuthenticationRepository(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IEmailService emailService, IConfiguration configuration, IGenerateTokenService generateToken, AppDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailService = emailService;
             _configuration = configuration;
             _generateToken = generateToken;
+            _context = context;
         }
         public async Task<string> RegisterAsync(RegisterDTO info)
         {
@@ -140,6 +143,20 @@ namespace Voltex.Infrastructure.Repositories
                 return "Password Reset Successfully";
             }
             else return res.Errors.ToList()[0].Description;
+        }
+
+        public async Task<bool> UpdateAddressAsync(string email, Address address)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+            {
+                return false;
+            }
+            if (user.Address == address)
+                _context.addresses.Update(address); 
+            else await _context.addresses.AddAsync(address);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

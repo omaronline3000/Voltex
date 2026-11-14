@@ -11,6 +11,7 @@ namespace Voltex.Core.Interfaces
         public IImageRepository imageRepository { get;}
         public ICartRepository cartRepository { get; }
         public IAuthenticationRepository authentication { get; }
+        public IOrderRepository orderRepository { get; }
 
     }
 }

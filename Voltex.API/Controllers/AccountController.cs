@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using System.ComponentModel.Design;
+using System.Security.Claims;
 using Voltex.API.Helper;
 using Voltex.Core.DTOs;
+using Voltex.Core.Entities;
 using Voltex.Core.Interfaces;
 namespace Voltex.API.Controllers
 {
@@ -122,6 +125,23 @@ namespace Voltex.API.Controllers
                 Detail = res
             });
 
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update(AddressDTO addressdto)
+        {
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+            var address = _mapper.Map<Address>(addressdto);
+            var res = await _unitOfWork.authentication.UpdateAddressAsync(email, address);
+            if (res)
+            {
+                return Ok(new { message = "Address Upaded Successfully" });
+            }
+            return BadRequest(new ProblemDetails()
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Bad Request"
+            });
         }
     }
 }

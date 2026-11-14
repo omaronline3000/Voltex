@@ -14,6 +14,7 @@ namespace Voltex.Core.Interfaces
         Task<bool> ConfirmEmailAsync(ActiveEmailDTO emaildto);
         Task<bool> SendResetPasswordEmailAsync(string email);
         Task<string> ResetPasswordAsync(ResetPasswordDTO resetpassword);
+        Task<bool> UpdateAddressAsync(string email, Address address);
 
     }
 }

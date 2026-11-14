@@ -10,10 +10,10 @@ using Voltex.Core.Interfaces;
 
 namespace Voltex.Infrastructure.Services
 {
-    public class GenerateToken : IGenerateToken
+    public class GenerateTokenService : IGenerateTokenService
     {
         private readonly IConfiguration _configuration;
-        public GenerateToken(IConfiguration configuration)
+        public GenerateTokenService(IConfiguration configuration)
         {
             _configuration = configuration;
         }

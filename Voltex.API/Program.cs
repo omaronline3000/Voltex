@@ -40,7 +40,7 @@ namespace Voltex.API
             builder.Services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
-
+           
             // Built-in Services Registeration
             builder.Services.AddControllers();
             builder.Services.AddProblemDetails();
