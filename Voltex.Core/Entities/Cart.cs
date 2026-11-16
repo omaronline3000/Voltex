@@ -14,6 +14,8 @@ namespace Voltex.Core.Entities
         {
             this.Id = id;
         }
+        public string PaymentIntentId { get; set; }
+        public string ClientSecret { get; set; }
         public ICollection<CartItem> Items { get; set; } = [];
     }
 }

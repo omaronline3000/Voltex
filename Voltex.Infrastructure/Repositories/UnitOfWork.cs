@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Voltex.Core.Entities;
 using Voltex.Core.Interfaces;
+using Voltex.Core.Services;
 using Voltex.Infrastructure.Data;
 
 namespace Voltex.Infrastructure.Repositories

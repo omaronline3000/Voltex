@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using Voltex.Core.DTOs;
@@ -20,12 +21,14 @@ namespace Voltex.Infrastructure.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly UserManager<AppUser> _userManager;
-        public OrderService(IMapper mapper, AppDbContext context, IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
+        private readonly IPaymentService _paymentService;
+        public OrderService(IMapper mapper, AppDbContext context, IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IPaymentService paymentService)
         {
             _mapper = mapper;
             _context = context;
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _paymentService = paymentService;
         }
 
         public async Task<OrderDTO> CreateOrderAsync(AddOrderDTO orderDTO , string buyerEmail)
@@ -42,10 +45,16 @@ namespace Voltex.Infrastructure.Services
             }
 
             decimal subtotal = OrderItems.Sum(o => o.Price * o.Quantity);
-
             var deliveryMethod = await _context.deliveryMethods.FindAsync(orderDTO.deliveryMethodId);
             var shippingData = _mapper.Map<ShippingData>(orderDTO.shipdata);
-            var order = new Order(buyerEmail, subtotal, shippingData, deliveryMethod,OrderItems);
+
+            var ExistingOrder = await _context.orders.FirstOrDefaultAsync(o => o.PaymentIntentId == Cart.PaymentIntentId);
+            if(ExistingOrder is not null)
+            {
+                await _unitOfWork.orderRepository.DeleteAsync(ExistingOrder);
+                await _paymentService.CreateOrUpdatePaymentAsync(Cart.Id, deliveryMethod.Id);
+            }
+            var order = new Order(buyerEmail, subtotal, shippingData, deliveryMethod,OrderItems,Cart.PaymentIntentId);
             await _unitOfWork.orderRepository.AddAsync(order);
             await _unitOfWork.cartRepository.DeleteCartAsync(orderDTO.CartId);
             var Orderdto = _mapper.Map<OrderDTO>(order);

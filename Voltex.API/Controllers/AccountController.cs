@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.VisualBasic;
 using System.ComponentModel.Design;
+using System.Reflection;
 using System.Security.Claims;
 using Voltex.API.Helper;
 using Voltex.Core.DTOs;
@@ -17,6 +19,21 @@ namespace Voltex.API.Controllers
         public AccountController(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
         }
+
+        [HttpGet("IsAuth")]
+        public IActionResult IsAuthenticated()
+        {
+            return User.Identity.IsAuthenticated ? Ok() : BadRequest();
+        }
+
+        [HttpGet("UserAddress")]
+        public async  Task<IActionResult> UserAddress()
+        {
+            var address = await _unitOfWork.authentication.GetUserAddressAsync(User.FindFirst(ClaimTypes.Email).Value);
+            var result = _mapper.Map<ShipDataDTO>(address);
+            return Ok(new ResponseApi<ShipDataDTO>(message: "Data Returned Successfully", data: result));
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDTO data)
         {

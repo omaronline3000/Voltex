@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Voltex.Core.Interfaces;
+using Voltex.Core.Services;
 using Voltex.Core.Sharing;
 using Voltex.Infrastructure.Data;
 using Voltex.Infrastructure.Repositories;
@@ -25,7 +26,7 @@ namespace Voltex.Infrastructure
             services.Configure<EmailSettings>(configure.GetSection("EmailSettings"));
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IGenerateTokenService, GenerateTokenService>();
-            
+            services.AddScoped<IPaymentService, PaymentService>();
 
 
             // Regisetr File Uploading Service

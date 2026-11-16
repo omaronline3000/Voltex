@@ -12,6 +12,7 @@ using System.Text;
 using Voltex.Core.DTOs;
 using Voltex.Core.Entities;
 using Voltex.Core.Interfaces;
+using Voltex.Core.Services;
 using Voltex.Core.Sharing;
 using Voltex.Infrastructure.Data;
 namespace Voltex.Infrastructure.Repositories
@@ -153,10 +154,23 @@ namespace Voltex.Infrastructure.Repositories
                 return false;
             }
             if (user.Address == address)
-                _context.addresses.Update(address); 
-            else await _context.addresses.AddAsync(address);
+            {
+                address.Id = user.Address.Id;
+                _context.addresses.Update(address);
+            }
+            else
+            { address.AppUserId = user.Id ; await _context.addresses.AddAsync(address); }
             await _context.SaveChangesAsync();
             return true;
+        }
+        public async Task<Address> GetUserAddressAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if(user is null)
+            {
+                return null;
+            }
+            return user.Address;
         }
     }
 }

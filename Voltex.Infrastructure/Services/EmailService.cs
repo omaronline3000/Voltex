@@ -4,11 +4,11 @@ using MimeKit;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Voltex.Core.Interfaces;
 using Voltex.Core.Sharing;
 using Voltex.Infrastructure.Data.Migrations;
 using MailKit.Security;
 using MailKit;
+using Voltex.Core.Services;
 namespace Voltex.Infrastructure.Services
 {
     public class EmailService : IEmailService

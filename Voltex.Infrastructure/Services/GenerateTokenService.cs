@@ -6,7 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Voltex.Core.Entities;
-using Voltex.Core.Interfaces;
+using Voltex.Core.Services;
 
 namespace Voltex.Infrastructure.Services
 {

@@ -308,6 +308,10 @@ namespace Voltex.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PaymentIntentId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<decimal>("SubTotal")
                         .HasColumnType("decimal(18,2)");
 
