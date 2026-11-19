@@ -9,6 +9,7 @@ namespace Voltex.API.Mappers
         public OrderMapper()
         {
             CreateMap<ShipDataDTO, ShippingData>().ReverseMap();
+            CreateMap<DeliveryMethod, DeliveryMethodsDTO>().ReverseMap();
             CreateMap<OrderDTO, Order>().ReverseMap()
                 .ForMember(o => o.DeliveryMethod , options => options
                 .MapFrom(o => o.DeliveryMethod.Name));

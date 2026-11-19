@@ -23,6 +23,7 @@ namespace Voltex.Infrastructure.Services
             List<Claim> Claims = new();
             Claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
             Claims.Add(new Claim(ClaimTypes.Name, user.UserName!));
+            Claims.Add(new Claim(ClaimTypes.Email, user.Email!));
             // Claims.Add(new Claim(ClaimTypes.Role, "Guest"));
             Claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
 

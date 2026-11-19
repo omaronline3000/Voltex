@@ -32,7 +32,13 @@ namespace Voltex.Infrastructure.Repositories
                 query = query.Where(p => p.NewPrice >= parameters.MinPrice);
 
             if (!string.IsNullOrEmpty(parameters.Search))
-                query = query.Where(p => p.Name.ToLower().Contains(parameters.Search.ToLower()) || p.Description.ToLower().Contains(parameters.Search.ToLower()));
+            {
+                var terms = parameters.Search.Split();
+                query = query.Where(p => terms.Any(t => t.ToLower() == p.Name.ToLower()) || terms.Any(t => t.ToLower() == p.Description.ToLower()));
+                
+                //query = query.Where(p => p.Name.ToLower().Contains(parameters.Search.ToLower()) || p.Description.ToLower().Contains(parameters.Search.ToLower()));
+            }
+                
 
             int count = await query.CountAsync();
             query = ApplySort(query, parameters);
@@ -78,8 +84,13 @@ namespace Voltex.Infrastructure.Repositories
                 query = query.Where(p => p.NewPrice >= parameters.MinPrice);
 
             if (!string.IsNullOrEmpty(parameters.Search))
-                query = query.Where(p => p.Name.ToLower().Contains(parameters.Search.ToLower()) || p.Description.ToLower().Contains(parameters.Search.ToLower()));
-
+            {
+                var terms = parameters.Search.Split();
+                query = query.Where(p => 
+                terms.Any(t =>  p.Name.ToLower().Contains(t.ToLower())) 
+                || 
+                terms.Any(t => p.Description.ToLower().Contains(t.ToLower())));
+            }
             int count = await query.CountAsync();
 
             query = ApplySort(query, parameters);

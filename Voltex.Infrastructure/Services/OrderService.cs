@@ -40,7 +40,7 @@ namespace Voltex.Infrastructure.Services
             {
                 var product = await _unitOfWork.productRepository.GetByIdAsync(item.Id);
                 var OrderItem = new OrderItem
-                    (product.Id, item.ImageUrl, item.Name, item.Quantity, item.Price);
+                    (product.Id, item.ImageUrl,product.Name, item.Quantity, product.NewPrice);
                 OrderItems.Add(OrderItem);
             }
 
@@ -52,25 +52,25 @@ namespace Voltex.Infrastructure.Services
             if(ExistingOrder is not null)
             {
                 await _unitOfWork.orderRepository.DeleteAsync(ExistingOrder);
-                await _paymentService.CreateOrUpdatePaymentAsync(Cart.Id, deliveryMethod.Id);
+                await _paymentService.CreateOrUpdatePaymentAsync(Cart.Id , deliveryMethod.Id);
             }
             var order = new Order(buyerEmail, subtotal, shippingData, deliveryMethod,OrderItems,Cart.PaymentIntentId);
             await _unitOfWork.orderRepository.AddAsync(order);
-            await _unitOfWork.cartRepository.DeleteCartAsync(orderDTO.CartId);
+            //await _unitOfWork.cartRepository.DeleteCartAsync(orderDTO.CartId);
             var Orderdto = _mapper.Map<OrderDTO>(order);
             return Orderdto;
 
         }
 
         public async Task<IReadOnlyList<OrderDTO>> GetAllOrdersAsync(string buyerMail)
-        => _mapper.Map<IReadOnlyList<OrderDTO>>(await _unitOfWork.orderRepository.GetAllAsync(buyerMail, o => o.DeliveryMethod, o => o.ShippingData));
+        => _mapper.Map<IReadOnlyList<OrderDTO>>(await _unitOfWork.orderRepository.GetAllAsync(buyerMail, o => o.DeliveryMethod, o => o.ShippingData , o => o.orderItems));
 
         public async Task<IReadOnlyList<DeliveryMethod>> GetDeliveryMethodsAsync()
         => await _context.deliveryMethods.AsNoTracking().ToListAsync();
         
 
         public async Task<OrderDTO> GetOrderByIdAsync(int id, string buyerMail)
-        => _mapper.Map<OrderDTO>(await _unitOfWork.orderRepository.GetByIdAsync(id,buyerMail, o => o.DeliveryMethod, o => o.ShippingData));
+        => _mapper.Map<OrderDTO>(await _unitOfWork.orderRepository.GetByIdAsync(id,buyerMail, o => o.DeliveryMethod, o => o.ShippingData , o => o.orderItems));
 
         
     }

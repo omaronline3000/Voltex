@@ -23,16 +23,9 @@ namespace Voltex.API.Controllers
         [HttpGet("IsAuth")]
         public IActionResult IsAuthenticated()
         {
-            return User.Identity.IsAuthenticated ? Ok() : BadRequest();
+            return User.Identity.IsAuthenticated ? Ok() : NotFound();
         }
 
-        [HttpGet("Address")]
-        public async  Task<IActionResult> UserAddress()
-        {
-            var address = await _unitOfWork.authentication.GetUserAddressAsync(User.FindFirst(ClaimTypes.Email).Value);
-            var result = _mapper.Map<ShipDataDTO>(address);
-            return Ok(new ResponseApi<ShipDataDTO>(message: "Data Returned Successfully", data: result));
-        }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDTO data)
@@ -56,7 +49,7 @@ namespace Voltex.API.Controllers
                     Detail = result
                 });
             }
-            else return StatusCode(statusCode: StatusCodes.Status201Created , new ResponseApi<string>(message: "User Created Successfully" , data: $"\"email\":\"{data.Email}\""));
+            else return StatusCode(statusCode: StatusCodes.Status201Created , new ResponseApi<string>(message: "User Created Successfully" , data: @$"'email':'{data.Email}'"));
         }
 
         [HttpPost("login")]
@@ -144,7 +137,17 @@ namespace Voltex.API.Controllers
 
         }
 
-        [HttpPut("Address")]
+        [HttpGet("address")]
+        public async Task<IActionResult> UserAddress()
+        {
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+            var address = await _unitOfWork.authentication.GetUserAddressAsync(email);
+            var result = _mapper.Map<AddressDTO>(address);
+            return Ok(new ResponseApi<AddressDTO>(message: "Data Returned Successfully", data: result));
+        }
+
+
+        [HttpPut("address")]
         public async Task<IActionResult> UpdateAddress(AddressDTO addressdto)
         {
             var email = User.FindFirst(ClaimTypes.Email)?.Value;

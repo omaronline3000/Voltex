@@ -124,21 +124,21 @@ namespace Voltex.API
 
             app.UseMiddleware<SecurityMiddleware>();
 
-            app.UseExceptionHandler(config =>
-            {
-                config.Run(async contex =>
-                {
-                    contex.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                    contex.Response.ContentType = "application/json";
+            //app.UseExceptionHandler(config =>
+            //{
+            //    config.Run(async contex =>
+            //    {
+            //        contex.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            //        contex.Response.ContentType = "application/json";
 
-                    await contex.Response.WriteAsJsonAsync(new
-                    {
-                        status = StatusCodes.Status500InternalServerError,
-                        message = $"Internal Error, Plese Contact the Developer {builder.Configuration["Developer Mail"]}.",
-                        traceid = contex.TraceIdentifier
-                    });
-                });
-            });
+            //        await contex.Response.WriteAsJsonAsync(new
+            //        {
+            //            status = StatusCodes.Status500InternalServerError,
+            //            message = $"Internal Error, Plese Contact the Developer {builder.Configuration["Developer Mail"]}.",
+            //            traceid = contex.TraceIdentifier
+            //        });
+            //    });
+            //});
             app.UseCors("Default Policy");
             app.UseStatusCodePages();
 

@@ -27,7 +27,7 @@ namespace Voltex.Infrastructure
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IGenerateTokenService, GenerateTokenService>();
             services.AddScoped<IPaymentService, PaymentService>();
-
+            services.AddScoped<IOrderService, OrderService>();
 
             // Regisetr File Uploading Service
             var webRoot = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot");

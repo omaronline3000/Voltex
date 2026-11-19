@@ -26,8 +26,8 @@ namespace Voltex.Core.Entities.Order
         public Status OrderStatus { get; set; } = Status.Pending;
         public string ClientEmail { get; set; }
         public decimal SubTotal { get; set; }
-        public DateTime OrderDate { get; set; } = DateTime.Now;
-        public string PaymentIntentId { get; set; }
+        public DateTime OrderDate { get; set; } = DateTime.UtcNow;
+        public string? PaymentIntentId { get; set; }
 
         [ForeignKey(nameof(DeliverMethodId))]
         public int DeliverMethodId { get; set; }

@@ -9,12 +9,13 @@ namespace Voltex.Core.DTOs
 
     public record OrderDTO
     {
+        public int Id { get; set; }
         public string OrderStatus { get; set; }
         public string ClientEmail { get; set; }
         public decimal SubTotal { get; set; }
         public decimal Total { get; set; }
         public DateTime OrderDate { get; set; }
-        public ShippingData ShippingData { get; set; }
+        public ShipDataDTO ShippingData { get; set; }
         public string DeliveryMethod { get; set; }
         public IReadOnlyList<OrderItemDTO> orderItems { get; set; }
     }
@@ -40,6 +41,14 @@ namespace Voltex.Core.DTOs
         public string MainImage { get; set; }
         public string ProductName { get; set; }
         public int Quantity { get; set; }
+        public decimal Price { get; set; }
+    }
+    public record DeliveryMethodsDTO
+    {
+        public int  Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string DeliveryTime { get; set; }
         public decimal Price { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
@@ -16,10 +17,12 @@ namespace Voltex.API.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly IMapper _mapper;
 
-        public OrderController(IOrderService orderService)
+        public OrderController(IOrderService orderService, IMapper mapper)
         {
             _orderService = orderService;
+            _mapper = mapper;
         }
         [HttpPost]
         public async Task<IActionResult> Create(AddOrderDTO orderdto)
@@ -42,11 +45,14 @@ namespace Voltex.API.Controllers
             var order = await _orderService.GetOrderByIdAsync(id, email);
             return Ok(new ResponseApi<OrderDTO>(message: "Data Returned Successfully", data: order));
         }
+
         [HttpGet("DeliverMethods")]
         public async Task<IActionResult> DeliveryMethods()
         {
             var delivery = await _orderService.GetDeliveryMethodsAsync();
-            return Ok(new ResponseApi<IReadOnlyList<DeliveryMethod>>(message: "Data Returned Successfully", data: delivery));
+            var res = _mapper.Map<IReadOnlyList<DeliveryMethodsDTO>>(delivery);
+            return Ok(new ResponseApi<IReadOnlyList<DeliveryMethodsDTO>>(message: "Data Returned Successfully", data: res));
         }
+
     }
 }

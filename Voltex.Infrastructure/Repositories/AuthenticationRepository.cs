@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -65,8 +66,8 @@ namespace Voltex.Infrastructure.Repositories
             {
                 return res.Errors.ToList()[0].Description;
             }
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            await SendConfirmationMailAsync(user.Email,token);
+            //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            //await SendConfirmationMailAsync(user.Email,token);
 
             return "Done";
         }
@@ -78,11 +79,11 @@ namespace Voltex.Infrastructure.Repositories
             {
                 return "Please Register First";
             }
-            if (!user.EmailConfirmed)
-            {
-                await SendConfirmationMailAsync(user.Email!, await _userManager.GenerateEmailConfirmationTokenAsync(user));
-                return "Please confirm your account first, We have send you an email";
-            }
+            //if (!user.EmailConfirmed)
+            //{
+            //    await SendConfirmationMailAsync(user.Email!, await _userManager.GenerateEmailConfirmationTokenAsync(user));
+            //    return "Please confirm your account first, We have send you an email";
+            //}
             var res = await _signInManager.CheckPasswordSignInAsync(user, info.Password,true);
             if (!res.Succeeded)
             {
@@ -149,17 +150,18 @@ namespace Voltex.Infrastructure.Repositories
         public async Task<bool> UpdateAddressAsync(string email, Address address)
         {
             var user = await _userManager.FindByEmailAsync(email);
+            var UserAddress = await _context.addresses.FirstOrDefaultAsync(a => a.AppUserId == user.Id);
             if (user is null)
             {
                 return false;
             }
-            if (user.Address == address)
-            {
-                address.Id = user.Address.Id;
-                _context.addresses.Update(address);
-            }
-            else
-            { address.AppUserId = user.Id ; await _context.addresses.AddAsync(address); }
+
+            UserAddress.City = address.City;
+            UserAddress.Country = address.Country;
+            UserAddress.ZipCode = address.ZipCode;
+            UserAddress.Street = address.Street;
+            _context.addresses.Update(UserAddress);
+
             await _context.SaveChangesAsync();
             return true;
         }
@@ -170,7 +172,8 @@ namespace Voltex.Infrastructure.Repositories
             {
                 return null;
             }
-            return user.Address;
+            var address = await _context.addresses.FirstOrDefaultAsync(a => a.AppUserId == user.Id);
+            return address;
         }
     }
 }

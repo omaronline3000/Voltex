@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Voltex.API.Helper;
 using Voltex.Core.DTOs;
 using Voltex.Core.Entities;
@@ -10,7 +11,7 @@ using Voltex.Core.Interfaces;
 
 namespace Voltex.API.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class CartController : BaseController
     {
         public CartController(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
@@ -35,14 +36,15 @@ namespace Voltex.API.Controllers
             if (cartDto.Id is not null)
             {
                 cart = await _unitOfWork.cartRepository.GetCartAsync(cartDto.Id);
-                foreach (var item in cartDto.Items)
-                {
-                    cart.Items.Add(item);
-                }
             }
                 
             else cart.Id = Guid.NewGuid().ToString();
-            
+
+            foreach (var item in cartDto.Items)
+            {
+                cart.Items.Add(item);
+            }
+
             var res = await _unitOfWork.cartRepository.UpdateCartAsync(cart);
             cartDto = _mapper.Map<CartDTO>(cart);
             return res is null ? throw new Exception() : (IActionResult)Ok(new ResponseApi<CartDTO>(message: "Data Saved Successfully", data: cartDto));
@@ -50,7 +52,7 @@ namespace Voltex.API.Controllers
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delet(string id)
-        {
+        {     
             var cart = await _unitOfWork.cartRepository.DeleteCartAsync(id);
             if (!cart)
             {

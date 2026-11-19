@@ -32,8 +32,9 @@ namespace Voltex.Infrastructure.Repositories
         public ICartRepository cartRepository { get; }
         public IAuthenticationRepository authentication { get; }
         public IOrderRepository orderRepository { get; }
-        public UnitOfWork(AppDbContext context , IConnectionMultiplexer connection , UserManager<AppUser> userManager, 
-            SignInManager<AppUser> signInManager , IEmailService emailService , IGenerateTokenService generateToken , IConfiguration configuration)
+        public IShippingDataRepository shippingDataRepository { get; }
+        public UnitOfWork(AppDbContext context, IConnectionMultiplexer connection, UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager, IEmailService emailService, IGenerateTokenService generateToken, IConfiguration configuration)
         {
             _context = context;
             _connect = connection;
@@ -48,9 +49,10 @@ namespace Voltex.Infrastructure.Repositories
             imageRepository = new ImageRepository(_context);
             cartRepository = new CartRepository(_connect);
             authentication = new AuthenticationRepository
-                (_userManager,_signInManager,
-                _emailService,_configuration,_generateToken,_context);
+                (_userManager, _signInManager,
+                _emailService, _configuration, _generateToken, _context);
             orderRepository = new OrderRepository(_context);
+            shippingDataRepository = new ShippingDataRepository(_context);
         }
 
     }
