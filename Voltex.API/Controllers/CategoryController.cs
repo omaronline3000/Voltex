@@ -7,9 +7,9 @@ using Voltex.Core.Interfaces;
 using Voltex.API.Helper;
 namespace Voltex.API.Controllers
 {
-    public class CategoriesController : BaseController
+    public class CategoryController : BaseController
     {
-        public CategoriesController(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public CategoryController(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
         }
 
@@ -53,13 +53,14 @@ namespace Voltex.API.Controllers
             
         }
 
-        [HttpPut]
-       public async Task<IActionResult> Update(UpdateCategoryDTO categoryDTO)
+        [HttpPut("{id:int}")]
+       public async Task<IActionResult> Update(int id , UpdateCategoryDTO categoryDTO)
         {
-            var category = await _unitOfWork.categoryRepository.GetByIdAsync(categoryDTO.id);
+            var category = await _unitOfWork.categoryRepository.GetByIdAsync(id);
             if (category is not null)
             {
                 _mapper.Map(categoryDTO, category);
+                category.Id = id;
                 await _unitOfWork.categoryRepository.UpdateAsync(category);
                 return NoContent();
             }

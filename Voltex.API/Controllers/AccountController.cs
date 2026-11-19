@@ -26,7 +26,7 @@ namespace Voltex.API.Controllers
             return User.Identity.IsAuthenticated ? Ok() : BadRequest();
         }
 
-        [HttpGet("UserAddress")]
+        [HttpGet("Address")]
         public async  Task<IActionResult> UserAddress()
         {
             var address = await _unitOfWork.authentication.GetUserAddressAsync(User.FindFirst(ClaimTypes.Email).Value);
@@ -144,8 +144,8 @@ namespace Voltex.API.Controllers
 
         }
 
-        [HttpPut]
-        public async Task<IActionResult> Update(AddressDTO addressdto)
+        [HttpPut("Address")]
+        public async Task<IActionResult> UpdateAddress(AddressDTO addressdto)
         {
             var email = User.FindFirst(ClaimTypes.Email)?.Value;
             var address = _mapper.Map<Address>(addressdto);

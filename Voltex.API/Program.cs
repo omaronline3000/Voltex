@@ -46,9 +46,9 @@ namespace Voltex.API
             builder.Services.AddProblemDetails();
             builder.Services.AddCors( options =>
             {
-                options.AddPolicy("Default Policy", p =>
+                options.AddPolicy("Default Policy", config =>
                 {
-                    p.AllowAnyOrigin()
+                    config.AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
                 });
@@ -116,6 +116,10 @@ namespace Voltex.API
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+            }
+            else
+            {
+                app.UseHsts();
             }
 
             app.UseMiddleware<SecurityMiddleware>();

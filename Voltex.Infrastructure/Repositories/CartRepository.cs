@@ -1,4 +1,5 @@
-﻿using StackExchange.Redis;
+﻿using Microsoft.AspNetCore.Authorization;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Text;

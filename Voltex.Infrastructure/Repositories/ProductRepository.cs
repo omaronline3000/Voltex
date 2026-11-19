@@ -31,7 +31,6 @@ namespace Voltex.Infrastructure.Repositories
             if (parameters.MinPrice.HasValue)
                 query = query.Where(p => p.NewPrice >= parameters.MinPrice);
 
-            // TODO: Fix it
             if (!string.IsNullOrEmpty(parameters.Search))
                 query = query.Where(p => p.Name.ToLower().Contains(parameters.Search.ToLower()) || p.Description.ToLower().Contains(parameters.Search.ToLower()));
 
@@ -40,6 +39,7 @@ namespace Voltex.Infrastructure.Repositories
 
             var ProductDTOquery = query.Select(p => new ProductDTO()
             {
+                Id = p.Id,
                 Name = p.Name,
                 CategoryName = p.category.CategoryTitle,
                 Description = p.Description,
@@ -78,7 +78,7 @@ namespace Voltex.Infrastructure.Repositories
                 query = query.Where(p => p.NewPrice >= parameters.MinPrice);
 
             if (!string.IsNullOrEmpty(parameters.Search))
-                query = query.Where(p => p.Name.Contains(parameters.Search) || p.Description.Contains(parameters.Search));
+                query = query.Where(p => p.Name.ToLower().Contains(parameters.Search.ToLower()) || p.Description.ToLower().Contains(parameters.Search.ToLower()));
 
             int count = await query.CountAsync();
 
@@ -92,6 +92,7 @@ namespace Voltex.Infrastructure.Repositories
 
             var ProductDTOquery = query.Select(p => new ProductDTO()
             {
+                Id = p.Id,
                 Name = p.Name,
                 CategoryName = p.category.CategoryTitle,
                 Description = p.Description,

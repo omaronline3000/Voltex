@@ -1,13 +1,16 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Voltex.API.Helper;
+using Voltex.Core.DTOs;
 using Voltex.Core.Entities;
 using Voltex.Core.Interfaces;
 
 namespace Voltex.API.Controllers
 {
+    //[Authorize]
     public class CartController : BaseController
     {
         public CartController(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
@@ -26,10 +29,23 @@ namespace Voltex.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateCart(Cart cart)
+        public async Task<IActionResult> UpdateCart(CartDTO cartDto)
         {
+            var cart = new Cart();
+            if (cartDto.Id is not null)
+            {
+                cart = await _unitOfWork.cartRepository.GetCartAsync(cartDto.Id);
+                foreach (var item in cartDto.Items)
+                {
+                    cart.Items.Add(item);
+                }
+            }
+                
+            else cart.Id = Guid.NewGuid().ToString();
+            
             var res = await _unitOfWork.cartRepository.UpdateCartAsync(cart);
-            return res is null ? throw new Exception() : (IActionResult)Ok(new ResponseApi<Cart>(message: "Data Saved Successfully", data: cart));
+            cartDto = _mapper.Map<CartDTO>(cart);
+            return res is null ? throw new Exception() : (IActionResult)Ok(new ResponseApi<CartDTO>(message: "Data Saved Successfully", data: cartDto));
             
         }
         [HttpDelete("{id}")]

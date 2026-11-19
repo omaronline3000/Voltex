@@ -284,6 +284,32 @@ namespace Voltex.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("deliveryMethods");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DeliveryTime = "3",
+                            Description = "The Fastest Method",
+                            Name = "DHL",
+                            Price = 500.00m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DeliveryTime = "5",
+                            Description = "Mid Speed Method",
+                            Name = "Egyption Post",
+                            Price = 350.00m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DeliveryTime = "7",
+                            Description = "Slow Method",
+                            Name = "OASP",
+                            Price = 150.00m
+                        });
                 });
 
             modelBuilder.Entity("Voltex.Core.Entities.Order.Order", b =>
