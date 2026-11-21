@@ -2,8 +2,13 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using Serilog.Core;
+using Serilog.Events;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using Voltex.API.Middlewares;
@@ -12,8 +17,6 @@ using Voltex.Core.Services;
 using Voltex.Infrastructure;
 using Voltex.Infrastructure.Data;
 using Voltex.Infrastructure.Services;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 namespace Voltex.API
 {
     public class Program
@@ -30,7 +33,7 @@ namespace Voltex.API
             // Custom Services Registeration
             builder.Services.InfrastuctureConfiguration(builder.Configuration);
             builder.Services.AddSingleton<IImageManagementService, ImageManagementService>();
-
+            
             // Packages Services Registeration
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -40,7 +43,9 @@ namespace Voltex.API
             builder.Services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
-           
+
+            builder.Host.UseSerilog((context, configuration) =>
+                configuration.ReadFrom.Configuration(context.Configuration));
             // Built-in Services Registeration
             builder.Services.AddControllers();
             builder.Services.AddProblemDetails();
@@ -122,23 +127,24 @@ namespace Voltex.API
                 app.UseHsts();
             }
 
+            app.UseMiddleware<AddCorelationIdMiddleware>();
+            app.UseSerilogRequestLogging();
             app.UseMiddleware<SecurityMiddleware>();
+            app.UseExceptionHandler(config =>
+            {
+                config.Run(async contex =>
+                {
+                    contex.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    contex.Response.ContentType = "application/json";
 
-            //app.UseExceptionHandler(config =>
-            //{
-            //    config.Run(async contex =>
-            //    {
-            //        contex.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            //        contex.Response.ContentType = "application/json";
-
-            //        await contex.Response.WriteAsJsonAsync(new
-            //        {
-            //            status = StatusCodes.Status500InternalServerError,
-            //            message = $"Internal Error, Plese Contact the Developer {builder.Configuration["Developer Mail"]}.",
-            //            traceid = contex.TraceIdentifier
-            //        });
-            //    });
-            //});
+                    await contex.Response.WriteAsJsonAsync(new
+                    {
+                        status = StatusCodes.Status500InternalServerError,
+                        message = $"Internal Error, Plese Contact the Developer {builder.Configuration["Developer Mail"]}.",
+                        traceid = contex.TraceIdentifier
+                    });
+                });
+            });
             app.UseCors("Default Policy");
             app.UseStatusCodePages();
 

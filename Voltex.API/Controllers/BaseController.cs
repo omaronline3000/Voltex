@@ -12,7 +12,6 @@ namespace Voltex.API.Controllers
     {
         protected readonly IUnitOfWork _unitOfWork;
         protected readonly IMapper _mapper;
-
         public BaseController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;

@@ -14,16 +14,19 @@ namespace Voltex.API.Controllers
     public class ProductController : BaseController
     {
         private readonly IImageManagementService _imageManagementService;
-        public ProductController(IUnitOfWork unitOfWork, IMapper mapper , IImageManagementService imageManagementService) : base(unitOfWork, mapper)
+        private readonly ILogger<ProductController> _logger;
+        public ProductController(IUnitOfWork unitOfWork, IMapper mapper, IImageManagementService imageManagementService, ILogger<ProductController> logger) : base(unitOfWork, mapper)
         {
             _imageManagementService = imageManagementService;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] QueryParameters parameters)
         {
+    
             var Products = await _unitOfWork.productRepository.GetAllAsync(parameters,includes: [p => p.images]);
-            
+            _logger.LogInformation("Retrieved All Products info");
             return Ok(new ResponseApi<PagedResults<ProductDTO>>
                 (message: "Successfully Returned Data", data: Products));
 
