@@ -20,7 +20,6 @@ namespace Voltex.API.Controllers
             _imageManagementService = imageManagementService;
             _logger = logger;
         }
-
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] QueryParameters parameters)
         {
@@ -140,6 +139,5 @@ namespace Voltex.API.Controllers
 
 
         }
-
     }
 }

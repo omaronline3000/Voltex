@@ -4,4 +4,5 @@
     <Project Path="Voltex.Core/Voltex.Core.csproj" />
     <Project Path="Voltex.Infrastructure/Voltex.Infrastructure.csproj" />
   </Folder>
+  <Project Path="Voltext.Test/Voltext.Test.csproj" Id="a03d6847-e707-41aa-9e47-27afa07f4d44" />
 </Solution>
